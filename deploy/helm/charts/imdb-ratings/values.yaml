@@ -1,0 +1,49 @@
+replicaCount: 2
+
+image:
+  repository: bondblaze/imdb-ratings
+  pullPolicy: IfNotPresent
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: "imdb-ratings"
+fullnameOverride: "imdb-ratings"
+
+resources: {}
+
+strategy:
+  rollingUpdate:
+    maxUnavailable: 1
+
+service:
+  type: NodePort
+  port: 5000
+
+pdb:
+  enabled: false
+  minAvailable: 2
+
+hpa:
+  enabled: false
+  minReplicas: 4
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: "imdb-ratings"
+
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 10000
+
+podSecurityContext:
+  fsGroup: 10000
+ 
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
