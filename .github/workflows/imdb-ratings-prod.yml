@@ -82,14 +82,14 @@ jobs:
       - name: Set release version env
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
 
-      # - name: 'Scan image against vulnerabilities'
-      #   uses: azure/container-scan@v0
-      #   with:
-      #     image-name: bondblaze/imdb-ratings:${{ env.RELEASE_VERSION }}
-      #     severity-threshold: HIGH
+      - name: 'Scan image against vulnerabilities'
+        continue-on-error: true
+        uses: azure/container-scan@v0
+        with:
+          image-name: bondblaze/imdb-ratings:${{ env.RELEASE_VERSION }}
+          severity-threshold: HIGH
 
   deploy:
-    if: always()
     name: 'deploy'
     needs: [security-scan]
     runs-on: ubuntu-latest

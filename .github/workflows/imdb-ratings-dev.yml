@@ -79,13 +79,13 @@ jobs:
     needs: build
     steps:
       - name: 'Scan image against vulnerabilities'
+        continue-on-error: true
         uses: azure/container-scan@v0
         with:
           image-name: bondblaze/imdb-ratings:${{ env.IMAGE_TAG }}
           severity-threshold: HIGH
 
   deploy:
-    if: always()
     name: 'deploy'
     needs: [security-scan]
     runs-on: ubuntu-latest
