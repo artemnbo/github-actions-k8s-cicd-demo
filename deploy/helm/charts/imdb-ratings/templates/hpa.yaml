@@ -1,0 +1,32 @@
+{{- if .Values.hpa.enabled }}
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "imdb-ratings.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "imdb-ratings.name" . }}
+    helm.sh/chart: {{ include "imdb-ratings.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "imdb-ratings.fullname" . }}
+  minReplicas: {{ .Values.hpa.minReplicas }}
+  maxReplicas: {{ .Values.hpa.maxReplicas }}
+  metrics:
+    {{- if .Values.hpa.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: {{ .Values.hpa.targetCPUUtilizationPercentage }}
+    {{- end }}
+    {{- if .Values.hpa.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        targetAverageUtilization: {{ .Values.hpa.targetMemoryUtilizationPercentage }}
+    {{- end }}
+{{- end }}

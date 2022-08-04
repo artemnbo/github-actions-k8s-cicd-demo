@@ -1,0 +1,23 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: "{{ include "imdb-ratings.fullname" . }}-secrets-role"
+rules:
+- apiGroups: ["*"]
+  resources: ["secrets"]
+  resourceNames: ["{{ include "imdb-ratings.fullname" . }}-env"]
+  verbs: ["list", "get"]
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: "{{ include "imdb-ratings.fullname" . }}-secrets-rolebinding"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: "{{ include "imdb-ratings.fullname" . }}-secrets-role"
+subjects:
+  - kind: Group
+    name: system:serviceaccounts:{{.Release.Namespace}}
+    apiGroup: rbac.authorization.k8s.io
