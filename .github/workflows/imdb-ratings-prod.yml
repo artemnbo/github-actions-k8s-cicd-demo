@@ -83,7 +83,7 @@ jobs:
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
 
       - name: 'Scan image against vulnerabilities'
-        continue-on-error: true
+        continue-on-error: false
         uses: azure/container-scan@v0
         with:
           image-name: bondblaze/imdb-ratings:${{ env.RELEASE_VERSION }}
