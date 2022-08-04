@@ -1,4 +1,4 @@
-# Simple Python Flask Dockerized Application to get top 10 movides from IMDB using [IMDB-API](https://imdb-api.com) #
+# Simple Python Flask Dockerized Application to get top 10 movies from IMDB using [IMDB-API](https://imdb-api.com) #
 
 Build the image using the following command
 
@@ -12,4 +12,4 @@ Run the Docker container using the command shown below.
 $ docker run -e API_KEY=YOUR_IMDB_API_KEY -d -p 5000:5000 imdb-ratings
 ```
 
-The application will be accessible at http:127.0.0.1:5000
+The application will be accessible at [http://127.0.0.1:5000](http://127.0.0.1:5000)
