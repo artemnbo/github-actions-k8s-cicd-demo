@@ -26,38 +26,38 @@ jobs:
         run: |
            pip install -r requirements.txt && pytest --cov=.
 
-  # analyze:
-  #   name: 'analyze'
-  #   runs-on: ubuntu-latest
-  #   permissions: 
-  #     actions: read
-  #     contents: read
-  #     security-events: write
+  analyze:
+    name: 'analyze'
+    runs-on: ubuntu-latest
+    permissions: 
+      actions: read
+      contents: read
+      security-events: write
 
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       language: [ 'python' ]
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'python' ]
 
-  #   steps:
-  #   - name: Checkout repository
-  #     uses: actions/checkout@v3
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-  #   - name: Initialize CodeQL
-  #     uses: github/codeql-action/init@v2
-  #     with:
-  #       languages: ${{ matrix.language }}
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v2
+      with:
+        languages: ${{ matrix.language }}
 
-  #   - name: Autobuild
-  #     uses: github/codeql-action/autobuild@v2
+    - name: Autobuild
+      uses: github/codeql-action/autobuild@v2
 
-  #   - name: Perform CodeQL Analysis
-  #     uses: github/codeql-action/analyze@v2
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v2
   
   build:
     name: 'build'
     runs-on: ubuntu-latest
-    needs: test
+    needs: [analyze, security-scan]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -73,20 +73,21 @@ jobs:
           push: true
           tags: bondblaze/imdb-ratings:${{ env.IMAGE_TAG }}
 
-  # security-scan:
-  #   name: 'security-scan'
-  #   runs-on: ubuntu-latest
-  #   needs: build
-  #   steps:
-  #     - name: 'Scan image against vulnerabilities'
-  #       uses: azure/container-scan@v0
-  #       with:
-  #         image-name: bondblaze/imdb-ratings:${{ env.IMAGE_TAG }}
-  #         severity-threshold: HIGH
+  security-scan:
+    name: 'security-scan'
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: 'Scan image against vulnerabilities'
+        if: always()
+        uses: azure/container-scan@v0
+        with:
+          image-name: bondblaze/imdb-ratings:${{ env.IMAGE_TAG }}
+          severity-threshold: HIGH
 
   deploy:
     name: 'deploy'
-    needs: [build]
+    needs: [security-scan]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
