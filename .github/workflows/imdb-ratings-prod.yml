@@ -74,19 +74,19 @@ jobs:
           push: true
           tags: bondblaze/imdb-ratings:${{ env.RELEASE_VERSION }}
 
-  # security-scan:
-  #   name: 'security-scan'
-  #   runs-on: ubuntu-latest
-  #   needs: build
-  #   steps:
-  #     - name: Set release version env
-  #       run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+  security-scan:
+    name: 'security-scan'
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Set release version env
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
 
-  #     - name: 'Scan image against vulnerabilities'
-  #       uses: azure/container-scan@v0
-  #       with:
-  #         image-name: bondblaze/imdb-ratings:${{ env.RELEASE_VERSION }}
-  #         severity-threshold: HIGH
+      # - name: 'Scan image against vulnerabilities'
+      #   uses: azure/container-scan@v0
+      #   with:
+      #     image-name: bondblaze/imdb-ratings:${{ env.RELEASE_VERSION }}
+      #     severity-threshold: HIGH
 
   deploy:
     if: always()
