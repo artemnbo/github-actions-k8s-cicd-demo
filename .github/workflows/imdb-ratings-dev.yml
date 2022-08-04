@@ -95,8 +95,12 @@ jobs:
         run: |
           touch $KUBECONFIG
           cat > $KUBECONFIG <<< '${{ secrets.KUBECONFIG_SA_KEY }}'
+          
           kubectl create namespace $NAMESPACE || true
-          sed -i -e "s/{{APP_VERSION_TAG}}/$IMAGE_TAG/g" ./deploy/helm/charts/imdb-ratings/Chart.yaml
+          
+          mkdir ./deploy/helm/charts/imdb-ratings/secrets || true
           echo "API_KEY=$API_KEY" > ./deploy/helm/charts/imdb-ratings/secrets/dotenv.credentials
+          sed -i -e "s/{{APP_VERSION_TAG}}/$IMAGE_TAG/g" ./deploy/helm/charts/imdb-ratings/Chart.yaml
+          
           helm upgrade gateway ./deploy/helm/charts/imdb-ratings --install --namespace="$NAMESPACE" -f ./deploy/helm/environments/dev.values.yaml
           helm status gateway --namespace="$NAMESPACE" || true
